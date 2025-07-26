@@ -1,0 +1,27 @@
+{
+  "name": "proxy",
+  "version": "1.0.0",
+  "description": "Proxy to home servers.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "proxy-server"
+  },
+  "keywords": [
+    "proxy"
+  ],
+  "author": "calebh101",
+  "license": "MIT",
+  "dependencies": {
+    "http": "^0.0.1-security",
+    "http-proxy": "^1.18.1",
+    "https": "^1.0.0",
+    "net": "^1.0.2",
+    "path": "^0.12.7",
+    "tls": "^0.0.1",
+    "yargs": "^18.0.0"
+  }
+}
