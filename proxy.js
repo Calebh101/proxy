@@ -172,7 +172,7 @@ function getOptions() {
             });
 
             items.forEach(port => {
-                if (port.secure === true) return;
+                if (port.secure === true || port.websocket !== true) return;
                 const address = getProtocol(false, true) + "://" + port.address;
 
                 if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
@@ -225,7 +225,7 @@ function getOptions() {
             });
 
             items.forEach(port => {
-                if (port.secure === false) return;
+                if (port.secure === false || port.websocket !== true) return;
                 const address = getProtocol(true, true) + "://" + port.address;
 
                 if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
