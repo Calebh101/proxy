@@ -67,11 +67,13 @@ function getOptions() {
         const to = data.hosts.find(x => x.id == hostTarget);
         const address = to?.address;
         const mode = port.mode;
+
         if (port.in == null) throw new ProxySetupError("Port [in] field is empty!");
         if (port.out == null) throw new ProxySetupError("Port [out] field is empty!");
         if (mode == null) throw new ProxySetupError("Port [mode] field is empty!");
         if (to == null) throw new ProxySetupError("Could not find host " + hostTarget + "!");
         if (address == null) throw new ProxySetupError("Host [address] field is empty!");
+
         print("Registering port " + i + ": self:" + port.in + " to " + to.address + ":" + port.out + " as " + mode);
 
         switch (mode) {

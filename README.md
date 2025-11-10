@@ -2,6 +2,8 @@
 
 This is a cool little tool to proxy connections to your server to another server.
 
+## config.json
+
 ```json
 {
     "ports": [
@@ -9,7 +11,8 @@ This is a cool little tool to proxy connections to your server to another server
             "in": 80,
             "out": 5000,
             "mode": "http", // This can be [http], [https], [ws], [wss], [raw], or [raw-tls].
-            "subdomain": ["subdomain"] // Optional subdomain, only for HTTP/S and WebSocket. If you wanted your subdomain to forward only my.subdomain.calebh101.com, this would be ["my", "subdomain"]. This can also be null, which will match any subdomain or root domain. Set it to just [] for root.
+            "subdomain": ["subdomain"], // Optional subdomain, only for HTTP/S and WebSocket. If you wanted your subdomain to forward only my.subdomain.calebh101.com, this would be ["my", "subdomain"]. This can also be null, which will match any subdomain or root domain. Set it to just [] for root.
+            "host": "main" // This is optional and defaults to 'main'
         },
         {
             "in": 443,
@@ -32,6 +35,10 @@ This is a cool little tool to proxy connections to your server to another server
         {
             "id": "main", // This is the default. You can specify several hosts.
             "address": "target" // This can be an IP address or anything else.
+        },
+        {
+            "id": "self",
+            "address": "127.0.0.1"
         }
     ],
     "certificates": {
