@@ -154,7 +154,7 @@ function getOptions() {
                 if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
                     matched = true;
                     logProxy("web", port, address);
-                    proxy.web(req, res, { target: address, secure: useSecureProxy });
+                    proxy.web(req, res, { target: address + ":" + port.port.out, secure: useSecureProxy });
                 }
             });
 
@@ -202,12 +202,13 @@ function getOptions() {
 
             items.forEach(port => {
                 if (port.secure == false) return;
-                const address = getProtocol(true, false) + "://" + port.address;
+                const useHttpForBackend = port?.port?.useHttpForBackend ?? false;
+                const address = getProtocol(!useHttpForBackend, false) + "://" + port.address;
 
                 if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
                     matched = true;
                     logProxy("web", port, address);
-                    proxy.web(req, res, { target: address, changeOrigin: true, secure: useSecureProxy });
+                    proxy.web(req, res, { target: address + ":" + port.port.out, changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
                 }
             });
 
@@ -310,11 +311,11 @@ function getWsSubdomains(req) {
 }
 
 function logProxy(type, port, address) {
-    print("Proxying " + type + ":" + port.mode + " " + port.index + ": self:" + port.port.in + " to " + address + ":" + port.port.out);
+    print("Proxying " + type + ":" + port.mode + ":" + port.index + ": self:" + port.port.in + " to " + address + ":" + port.port.out);
 }
 
 function logProxyRaw(type, port, index, address) {
-    print("Proxying " + type + " " + index + ": self:" + port.in + " to " + address + ":" + port.out);
+    print("Proxying " + type + ":" + index + ": self:" + port.in + " to " + address + ":" + port.out);
 }
 
 function resError(res, code=500) {
