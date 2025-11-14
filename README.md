@@ -12,7 +12,10 @@ This is a cool little tool to proxy connections to your server to another server
             "out": 5000,
             "mode": "http", // This can be [http], [https], [ws], [wss], [raw], or [raw-tls].
             "subdomain": ["subdomain"], // Optional subdomain, only for HTTP/S and WebSocket. If you wanted your subdomain to forward only my.subdomain.calebh101.com, this would be ["my", "subdomain"]. This can also be null, which will match any subdomain or root domain. Set it to just [] for root.
-            "host": "main" // This is optional and defaults to 'main'
+            "host": "main", // This is optional and defaults to 'main'
+            "useHttpForBackend": true, // This is optional, and converts HTTPS requests to HTTP
+            "forceHttps": true, // This is optional, and forces the client to redirect to an HTTPS version of their request
+            "forceHttpsPort": 443 // This is optional, and specifies the HTTPS port to redirect to if forceHttps is true. The default is 443
         },
         {
             "in": 443,

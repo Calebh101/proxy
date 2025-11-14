@@ -148,6 +148,18 @@ function getOptions() {
             });
 
             items.forEach(port => {
+                if (port?.port?.forceHttps ?? false) {
+                    const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
+                    const redirectUrl = `https://${host}${port.port.forceHttpsPort ? `:${port.port.forceHttpsPort}` : ""}${req.url}`;
+
+                    res.writeHead(301, { "Location": redirectUrl });
+                    res.end();
+
+                    print("HTTP proxy redirect from " + host + " to " + redirectUrl);
+                    matched = true;
+                    return;
+                }
+
                 if (port.secure == true) return;
                 const address = getProtocol(false, false) + "://" + port.address;
 
