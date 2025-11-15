@@ -1,6 +1,6 @@
-# What is this?
+# What is this, and why did I make this?
 
-This is a cool little tool to proxy connections to your server to another server.
+This is a very simple proxy that I made for a home server of mine. However, I decided to make it configurable when I wanted to *not* have to edit the code directly to change things. Over time I made it have more features like also being a reverse proxy and such.
 
 ## config.json
 
