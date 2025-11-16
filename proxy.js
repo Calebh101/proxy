@@ -162,8 +162,9 @@ function getOptions() {
 
                 if (port.secure == true) return;
                 const address = getProtocol(false, false) + "://" + port.address;
+                const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
 
-                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
+                if (port.hosts == null || isHostsMatch(host, port.hosts, port.base)) {
                     matched = true;
                     logProxy("web", port, address);
                     proxy.web(req, res, { target: address + ":" + port.port.out, secure: useSecureProxy });
@@ -187,8 +188,9 @@ function getOptions() {
             items.forEach(port => {
                 if (port.secure === true || port.websocket !== true) return;
                 const address = getProtocol(false, true) + "://" + port.address;
+                const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
 
-                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
+                if (port.hosts == null || isHostsMatch(host, port.hosts, port.base)) {
                     if (port.websocket) {
                         matched = true;
                         logProxy("ws", port, address);
@@ -214,8 +216,9 @@ function getOptions() {
                 if (port.secure == false) return;
                 const useHttpForBackend = port?.port?.useHttpForBackend ?? false;
                 const address = getProtocol(!useHttpForBackend, false) + "://" + port.address;
+                const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
 
-                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
+                if (port.hosts == null || isHostsMatch(host, port.hosts, port.base)) {
                     matched = true;
                     logProxy("web", port, address);
                     proxy.web(req, res, { target: address + ":" + port.port.out, changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
@@ -239,8 +242,9 @@ function getOptions() {
             items.forEach(port => {
                 if (port.secure === false || port.websocket !== true) return;
                 const address = getProtocol(true, true) + "://" + port.address;
+                const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
 
-                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
+                if (port.hosts == null || isHostsMatch(host, port.hosts, port.base)) {
                     if (port.websocket) {
                         matched = true;
                         logProxy("wss", port, address);
