@@ -332,8 +332,10 @@ function isHostsMatch(host, hosts, base) {
     }
 
     for (const h of hosts) {
-        var r = generateRegex(h);
-        if (r.test(host)) return true;
+        const r = generateRegex(h);
+        const match = r.test(host);
+        verbose("Generated regex '" + r + "' for host " + h + " (match: " + match + ") (host: " + host + ") (base: " + base + ")");
+        if (match) return true;
     }
 
     return false;
