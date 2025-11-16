@@ -328,7 +328,7 @@ function isHostsMatch(host, hosts, base) {
             host = host.replaceAll("@", base);
         }
 
-        return RegExp("^" + host.replaceAll("*", "[A-Za-z0-9!@_+:`~-]+").replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&') + "$");
+        return RegExp("^" + host.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&').replaceAll("*", "[A-Za-z0-9!@_+:`~-]+") + "$");
     }
 
     for (const h of hosts) {
