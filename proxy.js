@@ -9,7 +9,7 @@ const httpProxy = require('http-proxy');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const os = require('os');
-const { ProxySetupError } = require('./classes');
+const { ProxySetupError, ProxyProcessError } = require('./classes');
 
 const proxy = httpProxy.createProxyServer({});
 const usedHttpPorts = {};
@@ -119,8 +119,9 @@ function getOptions() {
                 usedHttpPorts[port.in] ??= [];
                 usedHttpPorts[port.in].push({
                     "index": i,
-                    "subdomains": port.subdomain,
+                    "hosts": port.hosts,
                     "address": address,
+                    "base": to?.base,
                     "port": port,
                     "mode": mode,
                     "secure": mode == "wss" || mode == "https",
@@ -140,7 +141,6 @@ function getOptions() {
         const portin = key;
 
         const httpServer = http.createServer((req, res) => {
-            const subdomains = getSubdomains(req);
             var matched = false;
 
             req.on('error', (e) => {
@@ -163,7 +163,7 @@ function getOptions() {
                 if (port.secure == true) return;
                 const address = getProtocol(false, false) + "://" + port.address;
 
-                if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
+                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
                     matched = true;
                     logProxy("web", port, address);
                     proxy.web(req, res, { target: address + ":" + port.port.out, secure: useSecureProxy });
@@ -178,7 +178,6 @@ function getOptions() {
 
         httpServer.on('upgrade', (req, socket, head) => {
             verbose("Found HTTP upgrade");
-            const subdomains = getWsSubdomains(req);
             var matched = false;
 
             req.on('error', (e) => {
@@ -189,7 +188,7 @@ function getOptions() {
                 if (port.secure === true || port.websocket !== true) return;
                 const address = getProtocol(false, true) + "://" + port.address;
 
-                if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
+                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
                     if (port.websocket) {
                         matched = true;
                         logProxy("ws", port, address);
@@ -205,7 +204,6 @@ function getOptions() {
         });
 
         const httpsServer = https.createServer(getOptions(), (req, res) => {
-            const subdomains = getSubdomains(req);
             var matched = false;
 
             req.on('error', (e) => {
@@ -217,7 +215,7 @@ function getOptions() {
                 const useHttpForBackend = port?.port?.useHttpForBackend ?? false;
                 const address = getProtocol(!useHttpForBackend, false) + "://" + port.address;
 
-                if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
+                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
                     matched = true;
                     logProxy("web", port, address);
                     proxy.web(req, res, { target: address + ":" + port.port.out, changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
@@ -232,7 +230,6 @@ function getOptions() {
 
         httpsServer.on('upgrade', (req, socket, head) => {
             verbose("Found HTTPS upgrade");
-            const subdomains = getWsSubdomains(req);
             var matched = false;
 
             req.on('error', (e) => {
@@ -243,7 +240,7 @@ function getOptions() {
                 if (port.secure === false || port.websocket !== true) return;
                 const address = getProtocol(true, true) + "://" + port.address;
 
-                if (port.subdomains == null || arraysEqual(port.subdomains, subdomains)) {
+                if (port.hosts == null || isHostsMatch(req.host, port.hosts, port.base)) {
                     if (port.websocket) {
                         matched = true;
                         logProxy("wss", port, address);
@@ -301,25 +298,9 @@ function getOptions() {
     });
 })();
 
-function subdomainString(subdomains) {
-    return subdomains.join(".") + ".*";
-}
-
 function arraysEqual(arr1, arr2) {
     if (arr1.length !== arr2.length) return false;
     return arr1.every((val, index) => val === arr2[index]);
-}
-
-function getSubdomains(req) {
-    var host = req.headers?.host?.split(":")[0];
-    var special = host?.endsWith("localhost") ?? false;
-    var out = host?.split('.')?.slice(0, special ? -1 : -2);
-    verbose("Found subdomains: " + JSON.stringify(out));
-    return out ?? [];
-}
-
-function getWsSubdomains(req) {
-    return getSubdomains(req);
 }
 
 function logProxy(type, port, address) {
@@ -338,4 +319,22 @@ function resError(res, code=500) {
 
 function getProtocol(secure, websocket) {
     return (secure ? (websocket ? "https" : "https") : "http");
+}
+
+function isHostsMatch(host, hosts, base) {
+    function generateRegex(host) {
+        if (host.includes("@")) {
+            if (base == null) throw ProxyProcessError("Proxy port required 'base' property for host, but none was provided!");
+            host = host.replaceAll("@", base);
+        }
+
+        return RegExp(host.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&').replaceAll("*", "[A-Za-z0-9!@_+:`~-]+"));
+    }
+
+    for (var h in hosts) {
+        var r = generateRegex(h);
+        if (r.test(host)) return true;
+    }
+
+    return false;
 }
