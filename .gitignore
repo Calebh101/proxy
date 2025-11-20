@@ -1,5 +1,6 @@
 node_modules
 bak
+configs
 
 config.json
 proxy.log

@@ -2,51 +2,33 @@
 
 This is a very simple proxy that I made for a home server of mine. However, I decided to make it configurable when I wanted to *not* have to edit the code directly to change things. Over time I made it have more features like also being a reverse proxy and such.
 
-## config.json
+# Usage
 
-```json
-{
-    "ports": [
-        {
-            "in": 80,
-            "out": 5000,
-            "mode": "http", // This can be [http], [https], [ws], [wss], [raw], or [raw-tls].
-            "subdomain": ["subdomain"], // Optional subdomain, only for HTTP/S and WebSocket. If you wanted your subdomain to forward only my.subdomain.calebh101.com, this would be ["my", "subdomain"]. This can also be null, which will match any subdomain or root domain. Set it to just [] for root.
-            "host": "main", // This is optional and defaults to 'main'
-            "useHttpForBackend": true, // This is optional, and converts HTTPS requests to HTTP
-            "forceHttps": true, // This is optional, and forces the client to redirect to an HTTPS version of their request
-            "forceHttpsPort": 443 // This is optional, and specifies the HTTPS port to redirect to if forceHttps is true. The default is 443
-        },
-        {
-            "in": 443,
-            "out": 443,
-            "mode": "https",
-            "subdomain": ["subdomain"]
-        },
-        {
-            "in": 8080,
-            "out": 8080,
-            "mode": "raw"
-        },
-        {
-            "in": 8888,
-            "out": 8888,
-            "mode": "raw-tls" // Same as [raw], but uses a TLS-only server.
-        }
-    ],
-    "hosts": [
-        {
-            "id": "main", // This is the default. You can specify several hosts.
-            "address": "target" // This can be an IP address or anything else.
-        },
-        {
-            "id": "self",
-            "address": "127.0.0.1"
-        }
-    ],
-    "certificates": {
-        "cert": "cert/cert.pem", // File path of certificate.
-        "key": "cert/key.pem" // File path of certificate key.
-    }
-}
-```
+Run `proxy.js` with Node.js. Possible arguments:
+
+- `--verbose`: Run in verbose mode. This provides some extra logs.
+- `--config [path]`: Run with a specific `config.json` file specified.
+
+# Configuration
+
+A configuration file defaults to `config.json` in the project directory, but can also be specified (see above). A template config can be found at `template-config.json`.
+
+In config.json you'll find `ports`, `hosts`, and `certificates`. `certificates` is only necessary if you use TCP, HTTPS, or some form of secure connection needing certificates.
+
+`hosts` contains possible hosts to proxy to. They each are a JSON object with these properties:
+
+- `id`: The ID that will be referenced by ports using them.
+- `address`: The address that will be proxied to. I use IP addresses, not sure if it can do actual websites.
+- `base`: The base domain that ports can use to resolve their targets. This is optional if not using it.
+
+`ports` contains the actual configurable different servers and ports you can proxy. It's another JSON object with these properties:
+
+- `in`: The port that is received from clients. This is a required integer.
+- `out`: The port that the data is proxied on to a server. This is a required integer.
+- `mode`: The mode that the port runs on. This can be `http`, `https`, `ws`, `wss`, `raw`, or, `raw-tls`. This is a required string.
+- `host`: The host ID pointing to a host in the `hosts` section. This is a required string.
+- `hosts`: This is an array of strings, and it defaults to covering all incoming requests for that port. These are subdomains. In a subdomain you can also put `@`, which means the `base` property of the specified host, or `*`, which is a wildcard matching **one** piece of the subdomain.
+- `forceHttps`: Redirect the client to port 443 of the same host automatically. Defaults to false.
+- `useHttpForBackend`: Internally turn HTTPS requests into HTTP requests. Defaults to false.
+
+For the sake of ease of use, the directories `bak` and `configs` are in `.gitignore`.

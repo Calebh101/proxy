@@ -1,0 +1,14 @@
+{
+    "ports": [],
+    "hosts": [
+        {
+            "id": "self",
+            "address": "127.0.0.1",
+            "base": "calebh101.com"
+        }
+    ],
+    "certificates": {
+        "key": "",
+        "cert": ""
+    }
+}
