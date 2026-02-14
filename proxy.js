@@ -153,6 +153,7 @@ function getOptions() {
                     const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
                     const redirectUrl = `https://${host}${port.port.forceHttpsPort ? `:${port.port.forceHttpsPort}` : ""}${req.url}`;
 
+                    if (res.headersSent) return;
                     res.writeHead(301, { "Location": redirectUrl });
                     res.end();
 
@@ -219,7 +220,7 @@ function getOptions() {
                 const address = getProtocol(!useHttpForBackend, false) + "://" + port.address;
                 const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
 
-                if (port.hosts != null || isHostsMatch(host, port.hosts, port.base)) {
+                if (port.hosts == null || isHostsMatch(host, port.hosts, port.base)) {
                     matched = true;
                     logProxy("web", port, address);
                     proxy.web(req, res, { target: address + ":" + port.port.out + (port.path || ""), changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
