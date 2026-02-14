@@ -122,6 +122,7 @@ function getOptions() {
                     "hosts": port.hosts,
                     "address": address,
                     "base": to?.base,
+                    "path": to?.path,
                     "port": port,
                     "mode": mode,
                     "secure": mode == "wss" || mode == "https",
@@ -218,10 +219,10 @@ function getOptions() {
                 const address = getProtocol(!useHttpForBackend, false) + "://" + port.address;
                 const host = req.headers.host ? req.headers.host.split(':')[0] : 'localhost';
 
-                if (port.hosts == null || isHostsMatch(host, port.hosts, port.base)) {
+                if (port.hosts != null || isHostsMatch(host, port.hosts, port.base)) {
                     matched = true;
                     logProxy("web", port, address);
-                    proxy.web(req, res, { target: address + ":" + port.port.out, changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
+                    proxy.web(req, res, { target: address + ":" + port.port.out + (port.path || ""), changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
                 }
             });
 

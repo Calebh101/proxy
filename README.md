@@ -18,7 +18,8 @@ In config.json you'll find `ports`, `hosts`, and `certificates`. `certificates` 
 `hosts` contains possible hosts to proxy to. They each are a JSON object with these properties:
 
 - `id`: The ID that will be referenced by ports using them.
-- `address`: The address that will be proxied to. I use IP addresses, not sure if it can do actual websites.
+- `address`: The address that will be proxied to. This can be an IP address, or the *base URL* of an actual website. (`like calebh101.github.io`)
+- `path`: If you'd like to specify a path for the above address, do it here. This is optional. (E.G. would be `/slope` if you were trying to proxy to `https://calebh101.github.io/slope`)
 - `base`: The base domain that ports can use to resolve their targets. This is optional if not using it.
 
 `ports` contains the actual configurable different servers and ports you can proxy. It's another JSON object with these properties:
