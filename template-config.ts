@@ -1,11 +1,10 @@
-import { Config } from "./types";
+import { Config, create } from "./types";
 
-export const config: Config = new Config({
+export const config = create({
     ports: [],
-    hosts: [
-        {
-            id: "self",
+    hosts: {
+        "self": {
             address: "127.0.0.1",
         }
-    ],
+    },
 });
