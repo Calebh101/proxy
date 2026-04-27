@@ -4,3 +4,7 @@ configs
 
 config.json
 proxy.log
+
+config.ts
+config.js
+*.config.js

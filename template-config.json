@@ -3,8 +3,7 @@
     "hosts": [
         {
             "id": "self",
-            "address": "127.0.0.1",
-            "base": "calebh101.com"
+            "address": "127.0.0.1"
         }
     ],
     "certificates": {

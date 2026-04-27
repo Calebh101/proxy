@@ -16,6 +16,7 @@
   "author": "calebh101",
   "license": "MIT",
   "dependencies": {
+    "esbuild": "^0.28.0",
     "http": "^0.0.1-security",
     "http-proxy": "^1.18.1",
     "https": "^1.0.0",
