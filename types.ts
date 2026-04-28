@@ -1,5 +1,5 @@
-export const proxyMOdes = ["ws", "wss", "raw", "raw-tls", "http", "https"] as const;
-export type ProxyMode = (typeof proxyMOdes)[number];
+export const proxyModes = ["ws", "wss", "raw", "raw-tls", "http", "https"] as const;
+export type ProxyMode = (typeof proxyModes)[number];
 
 export const httpProxyModes = ["http", "https"] as const;
 export type HttpProxyMode = (typeof httpProxyModes)[number];
@@ -42,9 +42,11 @@ export interface HttpPortConfig<H extends string> extends PortConfig<H> {
   hosts?: string[];
 
   /**
-   * Redirect to HTTPS on port 443
+   * Redirect to HTTPS on port 443, or specified port with `forceHttpsPort`
    */
   forceHttps?: boolean;
+
+  forceHttpsPort?: number;
 
   /**
    * Downgrade HTTPS backend requests to HTTP internally
@@ -84,7 +86,7 @@ export interface ConfigData<H extends string = string> {
   /**
    * Required only for TCP/HTTPS/TLS setups
    */
-  certificates?: CertificateConfig[];
+  certificates?: CertificateConfig;
 }
 
 export class Config<H extends string = string> {
