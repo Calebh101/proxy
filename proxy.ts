@@ -320,8 +320,10 @@ async function main() {
                     const target = isTLS ? httpsServer : httpServer;
                     print("target from " + typeof target + " (" + isTLS + ", " + buf[0] + ")");
 
+                    socket.pause();
                     socket.unshift(buf);
                     target.emit('connection', socket);
+                    process.nextTick(() => socket.resume());
                 } catch (e) {
                     warn("Multiplexer: " + e);
                 }
