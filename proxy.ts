@@ -318,7 +318,7 @@ async function main() {
 
                     const isTLS = buf[0] === 0x16;
                     const target = isTLS ? httpsServer : httpServer;
-                    print("target from " + typeof target);
+                    print("target from " + typeof target + " (" + isTLS + ", " + buf[0] + ")");
 
                     socket.unshift(buf);
                     target.emit('connection', socket);
