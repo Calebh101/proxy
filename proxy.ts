@@ -233,7 +233,6 @@ async function main() {
         const httpsServer = https.createServer(getOptions(), (req, res) => {
             try {
                 var matched = false;
-                print("hi");
 
                 req.on("error", (e) => {
                     warn("HTTPS request error: " + e);
@@ -242,14 +241,12 @@ async function main() {
                 items.forEach(port => {
                     if (!port.secure) return;
                     const data = port.port as HttpPortConfig<string>;
-                    print("trying port " + data.in + ":" + data.out);
                     const useHttpForBackend = data.useHttpForBackend ?? false;
                     const address = getProtocol(!useHttpForBackend, false) + "://" + port.address;
                     const host = req.headers.host?.split(":")[0] ?? "localhost";
 
                     if (port.hosts == undefined || isHostsMatch(host, port.hosts, port.base)) {
                         matched = true;
-                        print("yay");
                         proxy.web(req, res, { target: address + ":" + port.port.out + (port.path || ""), changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
                     }
                 });
