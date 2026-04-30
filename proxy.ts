@@ -201,7 +201,7 @@ async function main() {
             } catch (e) {
                 warn("HTTP server: " + e);
             }
-        }).listen(0, "127.0.0.1");
+        });
 
         httpServer.on("upgrade", (req, socket, head) => {
             try {
@@ -262,7 +262,7 @@ async function main() {
             } catch (e) {
                 warn("HTTPS server: " + e);
             }
-        }).listen(0, "127.0.0.1");
+        });
 
         httpsServer.on("upgrade", (req, socket, head) => {
             try {
@@ -304,6 +304,14 @@ async function main() {
             warn("HTTPS server error: " + e.message);
         });
 
+        httpServer.on('connection', () => {
+            print("HTTP server: Connection established");
+        });
+
+        httpsServer.on('connection', () => {
+            print("HTTPS server: Connection established");
+        });
+
         const multiplexer = net.createServer((socket) => {
             print("smth from " + (socket.address() as Record<string, string> | undefined)?.address);
 
@@ -320,10 +328,8 @@ async function main() {
                     const target = isTLS ? httpsServer : httpServer;
                     print("target from " + typeof target + " (" + isTLS + ", " + buf[0] + ")");
 
-                    socket.pause();
                     socket.unshift(buf);
                     target.emit('connection', socket);
-                    process.nextTick(() => socket.resume());
                 } catch (e) {
                     warn("Multiplexer: " + e);
                 }
