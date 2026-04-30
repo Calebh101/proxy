@@ -97,6 +97,8 @@ async function main() {
                         clientSocket.pipe(remoteSocket);
                         remoteSocket.pipe(clientSocket);
 
+                        print("TLS: Proxying " + (clientSocket.address() as net.AddressInfo | undefined)?.address + " to " + (remoteSocket.address() as net.AddressInfo | undefined)?.address + ":" + port.out);
+
                         clientSocket.on('error', (e: any) => warn("Client socket: " + e.message));
                         remoteSocket.on('error', (e: any) => warn("Remote socket: " + e.message));
                     } catch (e) {
@@ -118,6 +120,8 @@ async function main() {
 
                         clientSocket.pipe(remoteSocket);
                         remoteSocket.pipe(clientSocket);
+
+                        print("NET: Proxying " + (clientSocket.address() as net.AddressInfo | undefined)?.address + " to " + (remoteSocket.address() as net.AddressInfo | undefined)?.address + ":" + port.out);
 
                         clientSocket.on('error', (e) => warn("Client socket: " + e.message));
                         remoteSocket.on('error', (e) => warn("Remote socket: " + e.message));
@@ -157,6 +161,7 @@ async function main() {
         const httpServer = http.createServer((req, res) => {
             try {
                 var matched = false;
+                print("received http input");
 
                 req.on("error", (e) => {
                     warn("HTTP request error: " + e);
@@ -164,6 +169,7 @@ async function main() {
 
                 items.forEach(port => {
                     const data = port.port as HttpPortConfig<string>;
+                    print("trying port " + data.in + ":" + data.out);
                     const host = req.headers.host?.split(":")[0] ?? "localhost";
 
                     if (data.forceHttps ?? false) {
@@ -178,10 +184,12 @@ async function main() {
                     }
 
                     if (port.secure) return;
+                    print("more http input");
                     const address = getProtocol(false, false) + "://" + port.address;
 
                     if (port.hosts == undefined || isHostsMatch(host, port.hosts, port.base)) {
                         matched = true;
+                        print("yay going with it");
                         proxy.web(req, res, { target: address + ":" + port.port.out, secure: useSecureProxy });
                     }
                 });
