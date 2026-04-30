@@ -232,7 +232,7 @@ async function main() {
             } catch (e) {
                 warn("HTTP server upgrade: " + e);
             }
-        });
+        }).listen();
 
         const httpsServer = https.createServer(getOptions(), (req, res) => {
             try {
@@ -262,7 +262,7 @@ async function main() {
             } catch (e) {
                 warn("HTTPS server: " + e);
             }
-        });
+        }).listen();
 
         httpsServer.on("upgrade", (req, socket, head) => {
             try {
