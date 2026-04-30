@@ -219,7 +219,7 @@ async function main() {
 
                 if (matched == false) {
                     print("Unable to proxy HTTP request: Port not found");
-                    req.socket.destroy();
+                    socket.destroy();
                 }
             } catch (e) {
                 warn("HTTP server upgrade: " + e);
