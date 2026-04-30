@@ -201,7 +201,7 @@ async function main() {
             } catch (e) {
                 warn("HTTP server: " + e);
             }
-        });
+        }).listen(0, "127.0.0.1");
 
         httpServer.on("upgrade", (req, socket, head) => {
             try {
@@ -232,7 +232,7 @@ async function main() {
             } catch (e) {
                 warn("HTTP server upgrade: " + e);
             }
-        }).listen();
+        });
 
         const httpsServer = https.createServer(getOptions(), (req, res) => {
             try {
@@ -262,7 +262,7 @@ async function main() {
             } catch (e) {
                 warn("HTTPS server: " + e);
             }
-        }).listen();
+        }).listen(0, "127.0.0.1");
 
         httpsServer.on("upgrade", (req, socket, head) => {
             try {
