@@ -48,6 +48,14 @@ export interface HttpPortConfig<H extends string> extends PortConfig<H> {
 
   forceHttpsPort?: number;
 
+  /*
+   * This subpath will be requested to the server.
+   *
+   * Use `[[@]]` for where to put the input path;
+   * otherwise, it will be appended.
+   */
+  //path?: string;
+
   /**
    * Downgrade HTTPS backend requests to HTTP internally
    */

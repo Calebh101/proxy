@@ -186,7 +186,7 @@ async function main() {
 
                     if (port.hosts == undefined || isHostsMatch(host, port.hosts, port.base)) {
                         matched = true;
-                        proxy.web(req, res, { target: address + ":" + port.port.out, secure: useSecureProxy });
+                        proxy.web(req, res, { target: address + ":" + port.port.out + (port.path || ""), secure: useSecureProxy });
                     }
                 });
 
