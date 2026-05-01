@@ -42,6 +42,15 @@ const usedHttpPorts: Record<number, HttpPort[]> = {};
 const useSecureProxy = false;
 const version = "2.0.0A";
 
+proxy.on('error', (e: {message?: string}, req: any, res: any) => {
+    warn("Proxy error: " + e.message);
+
+    if (res && !('headersSent' in res && (res as http.ServerResponse).headersSent)) {
+        (res as http.ServerResponse).writeHead?.(502);
+        (res as http.ServerResponse).end?.("Bad Gateway");
+    }
+});
+
 const args = yargs(hideBin(process.argv))
     .option('config', {type: 'string', description: "Path to config file. Defaults to root of the script plus config.js.", demandOption: false, default: p.join(__dirname, "config.js"), coerce: (arg: any) => {
         arg = arg.replace("~", os.homedir());
