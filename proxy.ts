@@ -249,6 +249,7 @@ async function main() {
 
         const httpsServer = https.createServer(getOptions(), (req, res) => {
             try {
+                print("trying");
                 var matched = false;
                 req.headers["x-client"] = getAddress(req.socket);
 
@@ -257,6 +258,7 @@ async function main() {
                 });
 
                 items.forEach(port => {
+                    print("trying " + port.index);
                     if (!port.secure) return;
                     const data = port.port as HttpPortConfig<string>;
                     const useHttpForBackend = data.useHttpForBackend ?? false;
