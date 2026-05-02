@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Proxy to home servers.",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +27,8 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.13"
+    "@types/bun": "^1.3.13",
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3"
   }
 }

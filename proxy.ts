@@ -30,7 +30,7 @@ if (!((a as any).config instanceof Config)) {
 
 interface HttpPort {
     index: number;
-    hosts?: string[];
+    hosts?: string[] | undefined;
     address: string;
     base: string | undefined;
     path: string | undefined;
@@ -150,7 +150,7 @@ async function main() {
             case "https":
                 usedHttpPorts[port.in] ??= [];
 
-                usedHttpPorts[port.in].push({
+                usedHttpPorts[port.in]!.push({
                     index: i,
                     hosts: (port as HttpPortConfig<string>).hosts,
                     address: host.address,
@@ -169,7 +169,7 @@ async function main() {
     const portsToUse = Object.keys(usedHttpPorts).map(Number);
 
     portsToUse.forEach(portin => {
-        const items = usedHttpPorts[portin];
+        const items = usedHttpPorts[portin] ?? [];
 
         const httpServer = http.createServer((req, res) => {
             try {
@@ -249,7 +249,6 @@ async function main() {
 
         const httpsServer = https.createServer(getOptions(), (req, res) => {
             try {
-                print("trying");
                 var matched = false;
                 req.headers["x-client"] = getAddress(req.socket);
 
@@ -258,7 +257,6 @@ async function main() {
                 });
 
                 items.forEach(port => {
-                    print("trying " + port.index);
                     if (!port.secure) return;
                     const data = port.port as HttpPortConfig<string>;
                     const useHttpForBackend = data.useHttpForBackend ?? false;
