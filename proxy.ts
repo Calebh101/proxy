@@ -309,12 +309,12 @@ async function main() {
             warn("HTTPS server error: " + e.message);
         });
 
-        httpServer.on('connection', () => {
-            print("HTTP server: Connection established");
+        httpServer.on('connection', (socket) => {
+            print("HTTP server: Connection established: " + (socket.address() as net.AddressInfo | undefined)?.address);
         });
 
-        httpsServer.on('connection', () => {
-            print("HTTPS server: Connection established");
+        httpsServer.on('connection', (socket) => {
+            print("HTTPS server: Connection established: " + (socket.address() as net.AddressInfo | undefined)?.address);
         });
 
         const multiplexer = net.createServer((socket) => {
@@ -330,6 +330,7 @@ async function main() {
                     const isTLS = buf[0] === 0x16;
                     const target = isTLS ? httpsServer : httpServer;
 
+                    print("Multiplexer: Incoming from " + (socket.address() as net.AddressInfo | undefined)?.address + " (TLS: " + isTLS + ")");
                     socket.unshift(buf);
                     target.emit('connection', socket);
                 } catch (e) {
