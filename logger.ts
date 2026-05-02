@@ -1,5 +1,5 @@
-const fsp = require('fs/promises');
-const { constants } = require('fs');
+import fsp from 'fs/promises';
+import { constants } from 'fs';
 
 var useVerbose = false;
 var logfile: string;
