@@ -16,6 +16,10 @@ import * as https from 'https';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = p.dirname(__filename);
 
+function getAddress(socket: net.Socket) {
+    return (socket.address() as net.AddressInfo | undefined)?.address;
+}
+
 if ((a as any).config == undefined) {
     throw new Error("Please define 'config' in config.js.");
 }
@@ -170,6 +174,7 @@ async function main() {
         const httpServer = http.createServer((req, res) => {
             try {
                 var matched = false;
+                req.headers["x-client"] = getAddress(req.socket);
 
                 req.on("error", (e) => {
                     warn("HTTP request error: " + e);
@@ -195,7 +200,9 @@ async function main() {
 
                     if (port.hosts == undefined || isHostsMatch(host, port.hosts, port.base)) {
                         matched = true;
-                        proxy.web(req, res, { target: address + ":" + port.port.out + (port.path || ""), secure: useSecureProxy });
+                        const target = address + ":" + port.port.out + (port.path || "");
+                        print("Proxied HTTP to " + target);
+                        proxy.web(req, res, { target: target, secure: useSecureProxy });
                     }
                 });
 
@@ -211,6 +218,7 @@ async function main() {
         httpServer.on("upgrade", (req, socket, head) => {
             try {
                 var matched = false;
+                req.headers["x-client"] = getAddress(req.socket);
 
                 req.on('error', (e) => {
                     warn("WS request error: " + e);
@@ -242,6 +250,7 @@ async function main() {
         const httpsServer = https.createServer(getOptions(), (req, res) => {
             try {
                 var matched = false;
+                req.headers["x-client"] = getAddress(req.socket);
 
                 req.on("error", (e) => {
                     warn("HTTPS request error: " + e);
@@ -256,7 +265,9 @@ async function main() {
 
                     if (port.hosts == undefined || isHostsMatch(host, port.hosts, port.base)) {
                         matched = true;
-                        proxy.web(req, res, { target: address + ":" + port.port.out + (port.path || ""), changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
+                        const target = address + ":" + port.port.out + (port.path || "");
+                        print("Proxied HTTPS to " + target);
+                        proxy.web(req, res, { target: target, changeOrigin: true, secure: useSecureProxy && !useHttpForBackend });
                     }
                 });
 
@@ -272,6 +283,7 @@ async function main() {
         httpsServer.on("upgrade", (req, socket, head) => {
             try {
                 var matched = false;
+                req.headers["x-client"] = getAddress(req.socket);
 
                 req.on("error", (e) => {
                     warn("HTTPS request error: " + e);
