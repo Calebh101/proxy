@@ -112,8 +112,14 @@ export class Config<H extends string = string> {
 /**
  * Create a new `Config`. You must name and export the result of this as `config`.
  */
-export function create<H extends string>(data: ConfigData<H>): Config<H> {
-  return Config.create<H>(data);
+export function create<const Hosts extends Record<string, HostConfig>>(
+  data: {
+    hosts: Hosts;
+    ports: (PortConfig<Extract<keyof Hosts, string>> | HttpPortConfig<Extract<keyof Hosts, string>>)[];
+    certificates?: CertificateConfig;
+  }
+): Config<Extract<keyof Hosts, string>> {
+  return Config.create(data as unknown as ConfigData<Extract<keyof Hosts, string>>);
 }
 
 export class ProxySetupError extends Error {
